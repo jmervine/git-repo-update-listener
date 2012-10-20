@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -x
-test "$RACK_ENV" || RACK_ENV="development"
-pkill -9 -f "\"ackup config.ru -p 4321\""
-bundle exec rackup config.ru -p 4321 -o "$( hostname )" &> ./listener.log &

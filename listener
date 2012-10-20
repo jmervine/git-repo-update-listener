@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+test "$RACK_ENV" || RACK_ENV="development"
+test "$DEBUG"    && set -x
+
+function do_start() {
+  echo -n "starting listener... "
+  if unicorn --env $RACK_ENV --config-file ./config/unicorn.rb --daemonize
+  then
+    echo "started"
+  else
+    echo "failed"
+  fi
+}
+
+function do_stop() {
+  echo -n "stopping listener... "
+  if kill -9 $( cat ./log/listener.pid 2> /dev/null ) &> /dev/null
+  then
+    echo "stopped"
+  else
+    echo "failed"
+  fi
+}
+
+function do_restart() {
+  do_stop
+  sleep 5
+  do_start
+}
+
+function do_status() {
+  if ! test -e ./log/listener.pid
+  then
+    echo "listener isn't running"
+    exit 0
+  fi
+
+  if ps $( cat ./log/listener.pid ) &> /dev/null
+  then
+    echo "listener is running"
+  else
+    echo "listener isn't running"
+  fi
+}
+
+function do_help() {
+  echo "Usage: $( basename $0 ) start|stop|restart|status "
+  exit 0
+}
+
+case "$1" in
+  'start')
+    do_start
+    exit $?;;
+  'stop')
+    do_stop
+    exit $?;;
+  'restart')
+    do_restart
+    exit $?;;
+  'status')
+    do_status
+    exit $?;;
+esac
+do_help

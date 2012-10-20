@@ -2,3 +2,4 @@ vendor/bundle
 .*sw*
 config.yml
 *.log
+*.pid
