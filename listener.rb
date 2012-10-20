@@ -9,11 +9,11 @@ class Listener < Sinatra::Base
   end
 
   before do
-    403 if ENV['RACK_ENV'] == "production" and not config['github_ip_list'].include?(request.ip)
+    403 if ENV['RACK_ENV'] == "production" and not @@config['github_ip_list'].include?(request.ip)
   end
 
   get '/' do
-    raise "application root directory not found" unless File.directory?(config['application_root'])
-    %x{ set -x; cd #{ config['application_root'] } && git pull }
+    raise "application root directory not found" unless File.directory?(@@config['application_root'])
+    %x{ set -x; cd #{ @@config['application_root'] } && git pull }
   end
 end
