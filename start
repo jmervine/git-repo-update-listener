@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 test "$RACK_ENV" || RACK_ENV="development"
-pkill -f "listener.rb"
-bundle exec ruby -rubygems ./listener.rb &>> ./listener.log &
+pkill -9 -f "rackup config.ru -p 54321"
+#bundle exec ruby -rubygems ./listener.rb &>> ./listener.log &
+bundle exec rackup config.ru -p 54321 -o "$( hostname )" &> ./listener.log &
