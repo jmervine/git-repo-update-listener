@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+test "$RACK_ENV" || RACK_ENV="development"
+pkill -f "listener.rb"
+bundle exec ruby -rubygems ./listener.rb &>> ./listener.log &
