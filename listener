@@ -1,66 +1,27 @@
 #!/usr/bin/env bash
 
-test "$RACK_ENV" || RACK_ENV="development"
-test "$DEBUG"    && set -x
+test "$RACK_ENV"  || RACK_ENV="development"
+test "$THIN_PORT" || THIN_PORT="4321"
+test "$THIN_PID"  || THIN_PID="./log/listener.pid"
+test "$THIN_LOG"  || THIN_LOG="./log/listener.log"
 
-function do_start() {
-  echo -n "starting listener... "
-  if unicorn --env $RACK_ENV --config-file ./config/unicorn.rb --daemonize
-  then
-    echo "started"
-  else
-    echo "failed"
-  fi
-}
+echo "RACK_ENV == $RACK_ENV"
 
-function do_stop() {
-  echo -n "stopping listener... "
-  if kill -9 $( cat ./log/listener.pid 2> /dev/null ) &> /dev/null
-  then
-    echo "stopped"
-  else
-    echo "failed"
-  fi
-}
+test "$DEBUG"     && set -x
 
-function do_restart() {
-  do_stop
-  sleep 5
-  do_start
-}
+if ! test "$1"
+then
+	echo "usage: listener start|stop|restart"
+	echo " "
+	echo "takes the following configs as environemnt variables:"
+	echo " "
+	echo "  RACK_ENV  :: default $RACK_ENV"
+	echo "  THIN_PORT :: default $THIN_PORT"
+	echo "  THIN_PID  :: default $THIN_PID"
+	echo "  THIN_LOG  :: default $THIN_LOG"
+	echo " "
+	exit 0
+fi
 
-function do_status() {
-  if ! test -e ./log/listener.pid
-  then
-    echo "listener isn't running"
-    exit 0
-  fi
-
-  if ps $( cat ./log/listener.pid ) &> /dev/null
-  then
-    echo "listener is running"
-  else
-    echo "listener isn't running"
-  fi
-}
-
-function do_help() {
-  echo "Usage: $( basename $0 ) start|stop|restart|status "
-  exit 0
-}
-
-case "$1" in
-  'start')
-    do_start
-    exit $?;;
-  'stop')
-    do_stop
-    exit $?;;
-  'restart')
-    do_restart
-    exit $?;;
-  'status')
-    do_status
-    exit $?;;
-esac
-do_help
+# thin --port $THIN_PORT --pid $THIN_PID --environment $RACK_ENV --log $THIN_LOG --daemonize $1
+RACK_ENV=$RACK_ENV thin --port $THIN_PORT --pid $THIN_PID --log $THIN_LOG --daemonize $1
