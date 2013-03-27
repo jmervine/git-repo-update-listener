@@ -5,6 +5,8 @@ test "$THIN_PORT" || THIN_PORT="4321"
 test "$THIN_PID"  || THIN_PID="./log/listener.pid"
 test "$THIN_LOG"  || THIN_LOG="./log/listener.log"
 
+test -f ./config/thinrc && source ./config/thinrc
+
 echo "RACK_ENV == $RACK_ENV"
 
 test "$DEBUG"     && set -x
