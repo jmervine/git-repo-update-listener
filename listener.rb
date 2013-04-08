@@ -5,17 +5,28 @@ require 'pp'
 class Listener < Sinatra::Base
   @@config = YAML.load_file("./config/config.yml")
 
+  configure :development, :production do
+    enable :logging
+  end
+
   error do
     'ACK!'
   end
 
   post '/pull' do
+    logger.info "Request IP: #{request.env['HTTP_X_REAL_IP']}"
 
-    raise "forbidden" unless @@config['github_ip_list'].include?(request.ip)
+    match_found = false
+    @@config['github_ip_list'].each do |ippattern|
+      logger.error "#{request.env['HTTP_X_REAL_IP']} failed to match '#{ippattern}'"
+      match_found = true if !!(request.env['HTTP_X_REAL_IP'].match(Regexp.new(ippattern)))
+    end
+
+    raise "forbidden" unless match_found
 
     command = [ "cd #{@@config['application_root']}" ]
     command.push @@config['before_cmd'] if @@config['before_cmd']
-    command.push "git pull"
+    command.push "git pull #{@@config['github_remote']||"origin"} #{@@config['github_branch']||"master"}"
     command.push @@config['after_cmd'] if @@config['after_cmd']
 
     raise "application root directory not found" unless File.directory?(@@config['application_root'])
