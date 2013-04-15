@@ -1,9 +1,13 @@
 application_root: "/my/app/path"
+github_branch: "master"
 github_ip_list:
-  - "207.97.227.253"
-  - "50.57.128.197"
-  - "108.171.174.178"
-before_cmd: some_cmd
-after_cmd: some_cmd
+  - "207.97.227.[0-9]{1,3}"
+  - "50.57.128.[0-9]{1,3}"
+  - "108.171.174.[0-9]{1,3}"
+  - "50.57.231.[0-9]{1,3}"
+  - "204.232.175.[0-9]{1,3}"
+  - "192.30.252.[0-9]{1,3}"
+before_cmd: some_command
+after_cmd: some_command
 
 # vim: filetype=yaml
