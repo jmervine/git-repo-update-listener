@@ -2,6 +2,7 @@ vendor/bundle
 .*sw*
 config.yml
 *.log
+*.log*.gz
 *.pid
 .bundle
 config/thinrc
