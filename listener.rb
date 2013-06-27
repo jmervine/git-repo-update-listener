@@ -13,13 +13,20 @@ class Listener < Sinatra::Base
     'ACK!'
   end
 
+  get '/pull' do
+    "Git Hook Listener, see: https://github.com/jmervine/git-repo-update-listener"
+  end
+
   post '/pull' do
     logger.info "Request IP: #{request.env['HTTP_X_REAL_IP']}"
 
     match_found = false
     @@config['github_ip_list'].each do |ippattern|
-      logger.error "#{request.env['HTTP_X_REAL_IP']} failed to match '#{ippattern}'"
-      match_found = true if !!(request.env['HTTP_X_REAL_IP'].match(Regexp.new(ippattern)))
+      if !!(request.env['HTTP_X_REAL_IP'].match(Regexp.new(ippattern)))
+        match_found = true
+      else
+        logger.error "#{request.env['HTTP_X_REAL_IP']} failed to match '#{ippattern}'"
+      end
     end
 
     raise "forbidden" unless match_found
