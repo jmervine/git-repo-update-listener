@@ -26,4 +26,4 @@ then
 fi
 
 # thin --port $THIN_PORT --pid $THIN_PID --environment $RACK_ENV --log $THIN_LOG --daemonize $1
-RACK_ENV=$RACK_ENV thin --port $THIN_PORT --pid $THIN_PID --log $THIN_LOG --daemonize $1
+RACK_ENV=$RACK_ENV bundle exec thin --port $THIN_PORT --pid $THIN_PID --log $THIN_LOG --daemonize $1
